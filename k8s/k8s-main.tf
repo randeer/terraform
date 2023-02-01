@@ -49,6 +49,10 @@ resource "kubernetes_deployment" "test" {
   }
 }
 
+variable "test-var" {
+  type = "string"
+  value = "rashmika-manawadu"
+}
 
 output "k8s-image-name" {
   value = kubernetes_deployment.test.spec.0.template.0.spec.0.container.0.image

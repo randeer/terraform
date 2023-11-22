@@ -1,52 +1,56 @@
-variable "issuer_name" {
-  description = "Name of the issuer"
-  type        = string
+provider "kubectl" {
+  # Same config as in kubernetes provider
 }
 
-variable "issuer_namespace" {
-  description = "Namespace of the issuer"
-  type        = string
-}
-
-variable "issuer_email" {
-  description = "Email address used for ACME registration"
-  type        = string
-}
-
-variable "private_key_secret_ref" {
-  description = "Name of a secret used to store the ACME account private key"
-  type        = string
-}
-
-variable "issuer_resource_name" {
-  description = "Name of the cert-manager.io_issuer resource"
-  type        = string
-}
-
-resource "cert-manager.io_issuer" "letsencrypt-issuer" {
-  metadata {
-    name      = var.issuer_name
-    namespace = var.issuer_namespace
+provider "helm" {
+  kubernetes {
+    # Same config as in kubernetes provider
   }
+}
 
-  spec {
-    acme {
-      server = "https://acme-v02.api.letsencrypt.org/directory"
-      email  = var.issuer_email
+provider "kubernetes" {
+  # configuration
+}
 
-      privateKeySecretRef {
-        name = var.private_key_secret_ref
-      }
+terraform {
+  required_providers {
+    kubectl = {
+      source  = "alekc/kubectl"
+      version = ">= 2.0.2"
+    }
+    helm = {
+      source  = "hashicorp/helm"
+      version = "2.5.0"
+    }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "2.0.1"
+    }
+  }
+}
 
-      solvers {
-        selector = {}
+module "cert_manager" {
+  source = "terraform-iaac/cert-manager/kubernetes"
 
-        http01 {
-          ingress {
-            ingressClassName = "nginx"
-          }
+  cluster_issuer_email                   = "admin@mysite.com"
+  issuer_name                            = "cert-manager"
+  issuer_kind                            = "issuer"
+  namespace_name                         = "test-cert"
+  cluster_issuer_private_key_secret_name = "cert-manager-private-key"
+
+  solvers = [
+    {
+      http01 = {
+        ingress = {
+          class = "nginx"
         }
       }
+    }
+  ]
+
+  certificates = {
+    "my_certificate" = {
+      dns_names = ["my.example.com"]
     }
   }
 }

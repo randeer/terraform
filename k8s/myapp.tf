@@ -30,8 +30,8 @@ resource "kubernetes_namespace" var.resource_name {
   }
 }
 
-
 resource "cert-manager_issuer" var.resource_name {
+  depends_on = [kubernetes_namespace.var.resource_name]
   apiVersion = "cert-manager.io/v1"
   kind       = "Issuer"
   metadata {

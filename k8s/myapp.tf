@@ -19,8 +19,6 @@ provider "kubernetes" {
 }
 
 variable "namespace_name" {}
-variable "resource_name" {}
-variable "issuer_name" {}
 variable "email" {}
 variable "private_key_secret_ref" {}
 

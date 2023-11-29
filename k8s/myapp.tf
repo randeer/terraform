@@ -40,7 +40,7 @@ resource "cert-manager_issuer" var.resource_name {
   }
   spec {
     acme {
-      server             = https://acme-v02.api.letsencrypt.org/directory
+      server             = "https://acme-v02.api.letsencrypt.org/directory"
       email              = var.email
       privateKeySecretRef {
         name = var.private_key_secret_ref
@@ -49,7 +49,7 @@ resource "cert-manager_issuer" var.resource_name {
         selector = {}
         http01 {
           ingress {
-            ingressClassName = nginx
+            ingressClassName = "nginx"
           }
         }
       }

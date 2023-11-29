@@ -24,14 +24,14 @@ variable "issuer_name" {}
 variable "email" {}
 variable "private_key_secret_ref" {}
 
-resource "kubernetes_namespace" var.resource_name {
+resource "kubernetes_namespace" "resource_name" {
   metadata {
     name = var.namespace_name
   }
 }
 
-resource "cert-manager_issuer" var.resource_name {
-  depends_on = [kubernetes_namespace.var.resource_name]
+resource "cert-manager_issuer" "resource_name" {
+  depends_on = [kubernetes_namespace.resource_name]
   apiVersion = "cert-manager.io/v1"
   kind       = "Issuer"
   metadata {

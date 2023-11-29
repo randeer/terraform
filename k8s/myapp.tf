@@ -27,8 +27,13 @@ resource "kubernetes_namespace" "resource_name" {
   }
 }
 
+resource "time_sleep" "wait_for_issuer" {
+    depends_on = [kubernetes_namespace.resource_name]
+    create_duration = "10s"
+}
+
 resource "kubectl_manifest" "issuer" {
-  depends_on = [kubernetes_namespace.resource_name]
+  depends_on = [time_sleep.wait_for_issuer]
   yaml_body = <<YAML
 apiVersion: cert-manager.io/v1
 kind: Issuer

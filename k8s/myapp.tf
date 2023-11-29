@@ -30,29 +30,24 @@ resource "kubernetes_namespace" "resource_name" {
   }
 }
 
-resource "cert-manager_issuer" "resource_name" {
+resource "kubectl_manifest" "issuer" {
   depends_on = [kubernetes_namespace.resource_name]
-  apiVersion = "cert-manager.io/v1"
-  kind       = "Issuer"
-  metadata {
-    name      = var.issuer_name
-    namespace = var.namespace_name
-  }
-  spec {
-    acme {
-      server             = "https://acme-v02.api.letsencrypt.org/directory"
-      email              = var.email
-      privateKeySecretRef {
-        name = var.private_key_secret_ref
-      }
-      solvers {
-        selector = {}
-        http01 {
-          ingress {
-            ingressClassName = "nginx"
-          }
-        }
-      }
-    }
-  }
+  yaml_body = <<YAML
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: issuer-myapp
+  namespace: var.namespace_name
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: var.email
+    privateKeySecretRef:
+      name: var.private_key_secret_ref
+    solvers:
+    - selector: {}
+      http01:
+        ingress:
+          ingressClassName: nginx
+YAML
 }
